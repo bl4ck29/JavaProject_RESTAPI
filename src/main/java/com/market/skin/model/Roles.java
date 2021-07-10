@@ -24,7 +24,7 @@ public class Roles{
     private String role_name;
 
     @OneToMany(targetEntity=Users.class, mappedBy="role",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
-    private List<Users> users = new ArrayList<>();
+    protected List<Users> users = new ArrayList<>();
 
     public Roles(){}
     public Roles(int id, String name){
@@ -36,7 +36,6 @@ public class Roles{
 
     public int getId(){return this.role_id;}
     public String getRoleName(){return this.role_name;}
-    public List<Users> getUsers(){return this.users;}
 
     @Override
     public boolean equals(Object other){

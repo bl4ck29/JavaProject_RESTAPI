@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity @Table(name = "items")
@@ -33,7 +32,7 @@ public class Items {
     private String item_image;
     
     @OneToMany(targetEntity=Patterns.class, mappedBy="patterns",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
-    private List<Patterns> patterns = new ArrayList<>();
+    protected List<Patterns> patterns = new ArrayList<>();
 
 
     public Items(){}

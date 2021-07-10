@@ -24,7 +24,7 @@ public class GunsType {
     private String type_name;
 
     @OneToMany(targetEntity=Guns.class, mappedBy="gunsType",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
-    private List<Guns> guns = new ArrayList<>();
+    protected List<Guns> guns = new ArrayList<>();
     
     public GunsType(){}
     public GunsType(int id, String name){
