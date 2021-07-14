@@ -34,6 +34,8 @@ public class Items {
     @OneToMany(targetEntity=Patterns.class, mappedBy="patterns",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
     protected List<Patterns> patterns = new ArrayList<>();
 
+    // @OneToMany(targetEntity=Items.class, mappedBy="items", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    // protected List<Transactions> transactions = new ArrayList<>();
 
     public Items(){}
     public Items(int id, int gun_id, int patt_id, int cre_id, String image){

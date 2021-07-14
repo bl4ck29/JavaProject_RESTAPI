@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,16 +16,19 @@ import javax.validation.constraints.NotBlank;
 
 @Entity @Table(name = "transactions")
 public class Transactions {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int trans_id;
     
     private int user_id;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName = "user_id", insertable = false, updatable = false)    
     private Users user;
 
-    @NotBlank
     private int item_id;
+    // @ManyToOne
+    // @JoinColumn(name="item_id", referencedColumnName = "item_id", insertable = false, updatable = false)
+    // private Items items;
+
     @NotBlank
     private Timestamp update_time;
     @NotBlank @Column(length = 3)

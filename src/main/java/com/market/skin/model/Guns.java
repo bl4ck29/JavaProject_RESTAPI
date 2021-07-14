@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity @Table(name = "guns")
@@ -24,7 +23,7 @@ public class Guns {
 
     private int type_id;
 
-    @NotBlank @Size(max=20)
+    @Size(max=20)
     private String gun_name;
 
     @ManyToOne()

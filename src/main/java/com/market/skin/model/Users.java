@@ -1,5 +1,6 @@
 package com.market.skin.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,10 +24,10 @@ import javax.persistence.UniqueConstraint;
 
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "profile"})})
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "profile"})},
+	indexes = @Index(columnList = "user_name", name = "name_ind"))
 public class Users {
-	@Id 
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int user_id;
 
     @NotBlank @Size(min = 4, max = 15)
@@ -52,8 +54,7 @@ public class Users {
 	protected List<Transactions> trans = new ArrayList<>();
 
 	public Users(){}
-	public Users(int id, String user_name, String login_type, String email, int role_id, String profile, String user_password){
-		this.user_id = id;
+	public Users(String user_name, String login_type, String email, int role_id, String profile, String user_password){
 		this.user_name = user_name;
 		this.login_type = login_type;
 		this.email = email;
@@ -84,6 +85,7 @@ public class Users {
 			return false;
 		}
 		Users user = (Users) other;
-		return Objects.equals(user.getUserName(), this.user_name) && Objects.equals(user.getEmail(), this.email);
+		return Objects.equals(user.getUserName(), this.user_name) && Objects.equals(user.getEmail(), this.email) & Objects.equals(user.getPassword(), this.user_password)
+		& (user.getRoleId() == this.role_id);
 	}
 }

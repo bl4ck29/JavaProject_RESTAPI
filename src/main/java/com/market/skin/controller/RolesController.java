@@ -4,44 +4,57 @@ import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Roles;
-import com.market.skin.repository.RolesRepository;
+import com.market.skin.service.RolesService;
 
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class RolesController {
-    private final RolesRepository repository;
+    @Autowired
+    private final RolesService service;
 
-    public RolesController(RolesRepository repository){
-        this.repository = repository;
+    public RolesController(RolesService service){
+        this.service = service;
     }
 
     @GetMapping("/roles")
-    List<Roles> findAll(){return repository.findAll();}
-
-    @GetMapping("/roles/{id}")
-    Optional<Roles> findOne(@PathVariable int id){
-        return repository.findById(id);
+    ResponseEntity<Optional<Roles>> findOne(@RequestParam("id") int id){
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+            .body(service.findById(id));
     }
 
-    @PutMapping("roles/{id}")
-    Roles modifyRole(@RequestBody Roles newRole, @PathVariable int id){
-        return repository.findById(id).map(role -> {
-            role.setRoleName(newRole.getRoleName());
-            return repository.save(role);
-        }).orElseGet(() -> {
-            newRole.setId(id);
-            return repository.save(newRole);
-        });
+    @PutMapping("/roles")
+    ResponseEntity<Roles> createGun(@RequestBody Roles newRole){
+        service.createGuns(newRole);
+        return ResponseEntity.status(HttpStatus.OK).body(newRole);
     }
+    
     @DeleteMapping("/roles/{id}")
-    void deleteById(@PathVariable int id){
-        repository.deleteById(id);
+    ResponseEntity<Optional<Roles>> deleteGun(@PathVariable int id){
+        Optional<Roles> res = service.deleteGun(id);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @GetMapping("/roles/all")
+    Page<Roles> pageRequest(@PathVariable int page){
+        if (page == 0){
+            return service.homePage();
+        }
+        return service.showPage(page-1);
+    }
+
+    @GetMapping("/roles/all/sort")
+    Page<Roles> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+        return service.sortByAttr(attr, page, asc);
     }
 }

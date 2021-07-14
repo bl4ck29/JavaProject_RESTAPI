@@ -1,51 +1,61 @@
 package com.market.skin.controller;
 
-import java.util.List;
 import java.util.Optional;
 
-import com.market.skin.repository.UsersRepository;
+import com.market.skin.service.UsersService;
 import com.market.skin.model.Users;
 
 import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 public class UsersController {
-    private final UsersRepository repository;
+    private final UsersService service;
 
-    public UsersController(UsersRepository repository){
-        this.repository = repository;
+    public UsersController(UsersService service){
+        this.service = service;
     }
 
     @GetMapping("/users")
-    List<Users> findAll(){return repository.findAll();}
-
-    @GetMapping("/users/{id}")
-    Optional<Users> findOne(@PathVariable int id){
-        return repository.findById(id);
+    ResponseEntity<Optional<Users>> findOne(@RequestParam("id") int id){
+        return ResponseEntity.status(HttpStatus.OK)
+        .body(
+            service.findById(id)
+        );
     }
 
-    @PutMapping("/users/{id}")
-    Users modifyUser(@RequestBody Users newUser, @PathVariable int id){
-        return repository.findById(id).map(user -> {
-            user.setUserName(newUser.getUserName());
-            user.setEmail(newUser.getEmail());
-            user.setRoleId(newUser.getRoleId());
-            user.setLoginType(newUser.getLoginType());
-            user.setProfile(newUser.getProfile());
-            user.setPassword(newUser.getPassword());
-            return repository.save(user);
-        }).orElseGet(() -> {
-            newUser.setId(id);
-            return repository.save(newUser);
-        });
+    @PutMapping("/users")
+    void createUser(@RequestBody Users newUser){
+        // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        // String encode_password = encoder.encode(newUser.getPassword());
+        // newUser.setPassword(encode_password);
+        service.createUser(newUser);
     }
-
     @DeleteMapping("/users/{id}")
-    void deleteEmployee(@PathVariable int id) {repository.deleteById(id);}
+    ResponseEntity<String> deleteUser(@PathVariable int id) {
+        service.deleteUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted done");
+    }
+
+    @GetMapping("/users/all")
+    Page<Users> pageRequest(@PathVariable int page){
+        if (page == 0){
+            return service.homePage();
+        }
+        return service.showPage(page-1);
+    }
+
+    @GetMapping("/users/all/sort")
+    Page<Users> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+        return service.sortByAttr(attr, page, asc);
+    }
 }
