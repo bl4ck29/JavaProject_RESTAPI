@@ -1,6 +1,7 @@
 package com.market.skin.model;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,8 +21,8 @@ public class GunsType {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int type_id;
 
-    @NotBlank @Size(min = 5, max = 20)
-    private String type_name;
+    @NotBlank @Size(min = 5, max = 20) @Column(name = "type_name")
+    private String typeName;
 
     @OneToMany(targetEntity=Guns.class, mappedBy="gunsType",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
     protected List<Guns> guns = new ArrayList<>();
@@ -29,14 +30,15 @@ public class GunsType {
     public GunsType(){}
     public GunsType(int id, String name){
         this.type_id = id;
-        this.type_name = name;
+        this.typeName = name;
     }
 
     public void setId(int id){this.type_id = id;}
-    public void setGunName(String name){this.type_name = name;}
+    public void setGunName(String name){this.typeName = name;}
 
     public int getId(){return this.type_id;}
-    public String getName(){return this.type_name;}
+    public String getName(){return this.typeName;}
+    public List<Guns> getGuns(){return this.guns;}
 
     @Override
     public boolean equals(Object other){
@@ -44,6 +46,6 @@ public class GunsType {
             return false;
         } 
         GunsType gun = (GunsType) other;
-        return Objects.equals(gun.getName(), this.type_name);
+        return Objects.equals(gun.getName(), this.typeName);
     }
 }

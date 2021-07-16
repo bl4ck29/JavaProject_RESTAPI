@@ -1,5 +1,6 @@
 package com.market.skin.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Items;
@@ -28,6 +29,14 @@ public class ItemsService {
     public Items create(Items newItem){
         repository.save(newItem);
         return newItem;
+    }
+
+    public List<Items> findByGunId(int id){
+        return repository.findByGunId(id);
+    }
+
+    public List<Items> findByPatternId(int id){
+        return repository.findByPatternId(id);
     }
 
     public Optional<Items> deleteById(int id){

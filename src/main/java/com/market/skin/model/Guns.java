@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity @Table(name = "guns")
@@ -21,10 +23,12 @@ public class Guns {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int gun_id;
 
-    private int type_id;
+    @Column(name = "type_id")
+    private int typeId;
 
-    @Size(max=20)
-    private String gun_name;
+    @NotBlank @Size(max=20)
+    @Column(name = "gun_name")
+    private String gunName;
 
     @ManyToOne()
     @JoinColumn(name="type_id", referencedColumnName = "type_id", insertable = false, updatable = false)    
@@ -36,17 +40,18 @@ public class Guns {
     public Guns(){}
     public Guns(int id, int type_id, String gun_name){
         this.gun_id = id;
-        this.type_id = type_id;
-        this.gun_name = gun_name;
+        this.typeId = type_id;
+        this.gunName = gun_name;
     }
 
     public void setId(int id){this.gun_id = id;}
-    public void setTypeId(int id){this.type_id = id;}
-    public void setGunName(String name){this.gun_name = name;}
+    public void setTypeId(int id){this.typeId = id;}
+    public void setGunName(String name){this.gunName = name;}
 
     public int getId(){return this.gun_id;}
-    public int getTypeId(){return this.type_id;}
-    public String getGunName(){return this.gun_name;}
+    public int getTypeId(){return this.typeId;}
+    public String getGunName(){return this.gunName;}
+    public List<Items> getItems(){return this.items;}
 
     @Override
     public boolean equals(Object other){
@@ -54,6 +59,6 @@ public class Guns {
             return false;
         }
         Guns gun = (Guns) other;
-        return Objects.equals(gun.getGunName(), this.gun_name) && Objects.equals(gun.getTypeId(), this.type_id);
+        return Objects.equals(gun.getGunName(), this.gunName) && Objects.equals(gun.getTypeId(), this.typeId);
     }
 }

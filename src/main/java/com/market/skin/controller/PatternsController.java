@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Patterns;
@@ -29,6 +30,11 @@ public class PatternsController {
     ResponseEntity<Optional<Patterns>> findOne(@RequestParam("id") int id){
         return ResponseEntity.status(HttpStatus.ACCEPTED)
             .body(service.findById(id));
+    }
+
+    @GetMapping("/patterns/find")
+    ResponseEntity<List<Patterns>> findByPatternName(@RequestParam(required=false, name = "value") String value){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findByPatternName(value));
     }
 
     @PutMapping("/patterns")
@@ -51,7 +57,7 @@ public class PatternsController {
         return service.showPage(page-1);
     }
 
-    @GetMapping("/guns/all/sort")
+    @GetMapping("/patterns/all/sort")
     Page<Patterns> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
         return service.sortByAttr(attr, page, asc);
     }

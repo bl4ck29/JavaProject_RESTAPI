@@ -1,5 +1,6 @@
 package com.market.skin.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,14 @@ public class GunsTypeController {
     }
 
     @GetMapping("/types")
-    ResponseEntity<Optional<GunsType>> findOne(@RequestParam("id") int id){
+    ResponseEntity<Optional<GunsType>> findOne(@RequestParam(required=false, name = "id") int id){
         return ResponseEntity.status(HttpStatus.ACCEPTED)
             .body(service.findById(id));
+    }
+
+    @GetMapping("/types/find")
+    ResponseEntity<List<GunsType>> findByTypeName(@RequestParam(required=false, name = "name") String type_name){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findByTypeName(type_name));
     }
 
     @PutMapping("/types")
@@ -35,7 +41,7 @@ public class GunsTypeController {
         return ResponseEntity.status(HttpStatus.OK).body(newType);
     }
     
-    @DeleteMapping("/guns/{id}")
+    @DeleteMapping("/types/{id}")
     ResponseEntity<Optional<GunsType>> deleteGun(@PathVariable int id){
         Optional<GunsType> res = service.deleteGun(id);
         return ResponseEntity.status(HttpStatus.OK).body(res);

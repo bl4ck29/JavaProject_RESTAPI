@@ -1,6 +1,8 @@
 package com.market.skin.service;
 
 import java.util.Optional;
+import java.util.List;
+
 import com.market.skin.exception.UserExistedById;
 import com.market.skin.exception.UserIdNotFound;
 import com.market.skin.model.Users;
@@ -30,7 +32,19 @@ public class UsersService {
         repository.deleteById(id);
     }
 
-    public void modifyDetails(Users newUser){
+    public List<Users> findByUserName(String name){
+        return repository.findByUserName(name);
+    }
+
+    public List<Users> findByRoleId(int id){
+        return repository.findByRoleId(id);
+    }
+
+    public List<Users> findByEmail(String email){
+        return repository.findByEmail(email);
+    }
+
+    public void modify(Users newUser){
         repository.findById(newUser.getId()).map(user->{
             user.setUserName(newUser.getUserName());
             user.setEmail(newUser.getEmail());

@@ -1,5 +1,8 @@
 package com.market.skin.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Transactions;
@@ -32,8 +35,21 @@ public class TransController {
             .body(service.findById(id));
     }
 
+    @GetMapping("/transactions/find")
+    ResponseEntity<List<Transactions>> findByAttr(@RequestParam(required=false, name = "attr") String attr, @RequestParam(required=false, name = "value") String value){
+        if ("itemid".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByItemId(Integer.parseInt(value)));
+        } else if ("userid".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByUserId(Integer.parseInt(value)));
+        } else if ("status".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByStatus(value));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
     @PutMapping("/transactions")
     ResponseEntity<Transactions> createGun(@RequestBody Transactions newTrans){
+        newTrans.setUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
         service.create(newTrans);
         return ResponseEntity.status(HttpStatus.OK).body(newTrans);
     }
@@ -44,7 +60,7 @@ public class TransController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("/guns/all")
+    @GetMapping("/transactions/all")
     Page<Transactions> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();
@@ -52,8 +68,8 @@ public class TransController {
         return service.showPage(page-1);
     }
 
-    @GetMapping("/guns/all/sort")
-    Page<Transactions> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+    @GetMapping("/transactions/all/sort")
+    Page<Transactions> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc){
         return service.sortByAttr(attr, page, asc);
     }
 }

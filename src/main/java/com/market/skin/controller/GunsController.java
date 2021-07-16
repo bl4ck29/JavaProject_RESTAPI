@@ -1,5 +1,6 @@
 package com.market.skin.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.market.skin.service.GunsService;
 import com.market.skin.exception.GunExistedById;
 import com.market.skin.model.Guns;
+import com.market.skin.exception.CantExecRequest;
 
 @RestController
 public class GunsController {
@@ -33,10 +35,26 @@ public class GunsController {
             .body(service.findById(id));
     }
 
+    @GetMapping("/guns/find")
+    ResponseEntity<List<Guns>> findByGunName(@RequestParam(required=false, name = "attr") String attr ,@RequestParam(required=false, name = "value") String value)
+    {
+        if("name".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByGunName(value));
+        } 
+        if("typeid".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByTypeId(Integer.parseInt(value)));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
     @PutMapping("/guns")
-    ResponseEntity<Guns> createGun(@RequestBody Guns newGun) throws GunExistedById{
-        service.createGuns(newGun);
-        return ResponseEntity.status(HttpStatus.OK).body(newGun);
+    ResponseEntity<Guns> createGun(@RequestBody Guns newGun) throws GunExistedById, CantExecRequest{
+        Guns gun = new Guns();
+        gun.setId(newGun.getId());
+        gun.setTypeId(newGun.getTypeId());
+        gun.setGunName(newGun.getGunName().strip());
+        service.createGuns(gun);
+        return ResponseEntity.status(HttpStatus.OK).body(gun);
     }
     
     @DeleteMapping("/guns/{id}")
@@ -45,7 +63,7 @@ public class GunsController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("/guns/all")
+    @GetMapping("/guns/all/{page}")
     Page<Guns> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();
@@ -53,8 +71,8 @@ public class GunsController {
         return service.showPage(page-1);
     }
 
-    @GetMapping("/guns/all/sort")
-    Page<Guns> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+    @GetMapping("/guns/all/sort/{page}")
+    Page<Guns> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc){
         return service.sortByAttr(attr, page, asc);
     }
 }

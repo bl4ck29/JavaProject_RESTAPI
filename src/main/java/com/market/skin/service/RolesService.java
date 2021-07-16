@@ -2,6 +2,7 @@ package com.market.skin.service;
 
 import com.market.skin.repository.RolesRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Roles;
@@ -26,13 +27,17 @@ public class RolesService {
         return repository.findById(id);
     }
 
-    public void createGuns(Roles role){
+    public void createRole(Roles role){
         repository.save(role);
     }
-    public Optional<Roles> deleteGun(int id){
+    public Optional<Roles> deleteRole(int id){
         Optional<Roles> res = repository.findById(id);
         repository.deleteById(id);
         return res;
+    }
+
+    public List<Roles> findByRoleName(String name){
+        return repository.findByRoleName(name);
     }
     
     public void modifyDetails(Roles newRole){

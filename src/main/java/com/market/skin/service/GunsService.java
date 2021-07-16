@@ -1,6 +1,7 @@
 package com.market.skin.service;
 
 import java.util.Optional;
+import java.util.List;
 
 import com.market.skin.model.Guns;
 import com.market.skin.repository.GunsRepository;
@@ -24,6 +25,14 @@ public class GunsService {
 
     public Optional<Guns> findById(int id){
         return repository.findById(id);
+    }
+
+    public List<Guns> findByGunName(String name){
+        return repository.findByGunName(name);
+    }
+
+    public List<Guns> findByTypeId(int id){
+        return repository.findByTypeId(id);
     }
 
     public void createGuns(Guns gun) throws GunExistedById{

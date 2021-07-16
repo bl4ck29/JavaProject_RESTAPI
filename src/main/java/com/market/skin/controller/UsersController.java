@@ -26,7 +26,7 @@ public class UsersController {
     }
 
     @GetMapping("/users")
-    ResponseEntity<Optional<Users>> findOne(@RequestParam("id") int id){
+    ResponseEntity<Optional<Users>> findOne(@RequestParam(required=false, name = "id") int id){
         return ResponseEntity.status(HttpStatus.OK)
         .body(
             service.findById(id)
@@ -46,7 +46,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.OK).body("Deleted done");
     }
 
-    @GetMapping("/users/all")
+    @GetMapping("/users/all/{page}")
     Page<Users> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();
@@ -54,8 +54,8 @@ public class UsersController {
         return service.showPage(page-1);
     }
 
-    @GetMapping("/users/all/sort")
-    Page<Users> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+    @GetMapping("/users/all/sort/{page}")
+    Page<Users> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc){
         return service.sortByAttr(attr, page, asc);
     }
 }

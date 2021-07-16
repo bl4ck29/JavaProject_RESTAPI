@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,6 +31,16 @@ public class ItemsController {
         .body(service.findById(id));
     }
 
+    @GetMapping("/items/find")
+    ResponseEntity<List<Items>> findByAttr(@RequestParam(required=false, name = "attr") String attr, @RequestParam(required=false, name = "value") String value){
+        if("gunid".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByGunId(Integer.parseInt(value)));
+        } else if("paternid".equals(attr)){
+            return ResponseEntity.status(HttpStatus.OK).body(service.findByPatternId(Integer.parseInt(value)));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
     @PutMapping("/items")
     ResponseEntity<Items> createItems(@RequestBody Items newItem){
         service.create(newItem);
@@ -42,7 +53,7 @@ public class ItemsController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("/items/all")
+    @GetMapping("/items/all/{page}")
     Page<Items> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();
@@ -50,8 +61,8 @@ public class ItemsController {
         return service.showPage(page-1);
     }
 
-    @GetMapping("/guns/all/sort")
-    Page<Items> sort(@PathVariable Boolean asc, @PathVariable int page, @PathVariable String attr){
+    @GetMapping("/items/all/sort")
+    Page<Items> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc){
         return service.sortByAttr(attr, page, asc);
     }
 }

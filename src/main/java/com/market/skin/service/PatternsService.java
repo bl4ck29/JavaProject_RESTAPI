@@ -1,5 +1,6 @@
 package com.market.skin.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Patterns;
@@ -34,6 +35,10 @@ public class PatternsService {
         Optional<Patterns> res = repository.findById(id);
         repository.deleteById(id);
         return res;
+    }
+
+    public List<Patterns> findByPatternName(String name){
+        return repository.findByPatternName(name);
     }
 
     public void modify(Patterns newPatt){

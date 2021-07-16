@@ -1,5 +1,6 @@
 package com.market.skin.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Transactions;
@@ -32,6 +33,18 @@ public class TransService {
         Optional<Transactions> res = repository.findById(id);
         repository.deleteById(id);
         return res;
+    }
+
+    public List<Transactions> findByItemId(int id){
+        return repository.findByItemId(id);
+    }
+
+    public List<Transactions> findByUserId(int id){
+        return repository.findByUserId(id);
+    }
+
+    public List<Transactions> findByStatus(String status){
+        return repository.findByStatus(status);
     }
 
     public void modify(Transactions newTrans){

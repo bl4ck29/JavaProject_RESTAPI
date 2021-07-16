@@ -1,5 +1,6 @@
 package com.market.skin.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.GunsType;
@@ -24,6 +25,11 @@ public class GunsTypeService {
     public void createGuns(GunsType gun){
         repository.save(gun);
     }
+
+    public List<GunsType> findByTypeName(String name){
+        return repository.findByTypeName(name);
+    }
+    
     public Optional<GunsType> deleteGun(int id){
         Optional<GunsType> res = repository.findById(id);
         repository.deleteById(id);
