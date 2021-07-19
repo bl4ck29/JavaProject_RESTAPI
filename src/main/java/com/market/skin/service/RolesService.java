@@ -2,7 +2,6 @@ package com.market.skin.service;
 
 import com.market.skin.repository.RolesRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Roles;
@@ -36,9 +35,9 @@ public class RolesService {
         return res;
     }
 
-    public List<Roles> findByRoleName(String name){
-        return repository.findByRoleName(name);
-    }
+    // public List<Roles> findByRoleName(String name){
+    //     return repository.findByRoleName(name);
+    // }
     
     public void modifyDetails(Roles newRole){
         repository.findById(newRole.getId()).map(role->{

@@ -1,22 +1,28 @@
 package com.market.skin.service;
 
 import java.util.Optional;
+
 import java.util.List;
 
 import com.market.skin.exception.UserExistedById;
 import com.market.skin.exception.UserIdNotFound;
 import com.market.skin.model.Users;
 import com.market.skin.repository.UsersRepository;
+import com.market.skin.security.service.UserDetailsImp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
-public class UsersService {
+public class UsersService implements UserDetailsService{
     @Autowired
     private UsersRepository repository;
 
@@ -32,12 +38,8 @@ public class UsersService {
         repository.deleteById(id);
     }
 
-    public List<Users> findByUserName(String name){
+    public Optional<Users> findByUserName(String name){
         return repository.findByUserName(name);
-    }
-
-    public List<Users> findByRoleId(int id){
-        return repository.findByRoleId(id);
     }
 
     public List<Users> findByEmail(String email){
@@ -49,7 +51,7 @@ public class UsersService {
             user.setUserName(newUser.getUserName());
             user.setEmail(newUser.getEmail());
             user.setLoginType(newUser.getLoginType());
-            user.setRoleId(newUser.getRoleId());
+            // user.setRoleId(newUser.getRoleId());
             user.setProfile(newUser.getProfile());
             return repository.save(user);
         });
@@ -68,5 +70,12 @@ public class UsersService {
             return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).ascending()));
         }
         return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).descending()));
+    }
+
+    @Override @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        Users user = repository.findByUserName(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " +username));
+        return UserDetailsImp.build(user);
     }
 }

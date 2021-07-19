@@ -1,6 +1,5 @@
 package com.market.skin.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.market.skin.model.Roles;
@@ -33,10 +32,10 @@ public class RolesController {
             .body(service.findById(id));
     }
 
-    @GetMapping("/roles/find")
-    ResponseEntity<List<Roles>> findByRoleName(@RequestParam(required=false, name = "value") String value){
-        return ResponseEntity.status(HttpStatus.OK).body(service.findByRoleName(value));
-    }
+    // @GetMapping("/roles/find")
+    // ResponseEntity<List<Roles>> findByRoleName(@RequestParam(required=false, name = "value") String value){
+    //     return ResponseEntity.status(HttpStatus.OK).body(service.findByRoleName(value));
+    // }
 
     @PutMapping("/roles")
     ResponseEntity<Roles> createGun(@RequestBody Roles newRole){

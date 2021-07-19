@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 public class UsersController {
@@ -35,11 +34,9 @@ public class UsersController {
 
     @PutMapping("/users")
     void createUser(@RequestBody Users newUser){
-        // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        // String encode_password = encoder.encode(newUser.getPassword());
-        // newUser.setPassword(encode_password);
         service.createUser(newUser);
     }
+    
     @DeleteMapping("/users/{id}")
     ResponseEntity<String> deleteUser(@PathVariable int id) {
         service.deleteUser(id);
