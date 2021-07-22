@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +33,12 @@ public class PatternsController {
     }
 
     @GetMapping("/patterns/find")
-    ResponseEntity<List<Patterns>> findByPatternName(@RequestParam(required=false, name = "value") String value){
+    ResponseEntity<Optional<Patterns>> findByPatternName(@RequestParam(required=false, name = "value") String value){
         return ResponseEntity.status(HttpStatus.OK).body(service.findByPatternName(value));
     }
 
-    @PutMapping("/patterns")
-    ResponseEntity<Patterns> createGun(@RequestBody Patterns newPatt){
+    @PostMapping("/patterns")
+    ResponseEntity<Patterns> createPattern(@RequestBody Patterns newPatt){
         service.create(newPatt);
         return ResponseEntity.status(HttpStatus.OK).body(newPatt);
     }
@@ -49,7 +49,7 @@ public class PatternsController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("/pattern/all")
+    @GetMapping("/pattern/all/{page}")
     Page<Patterns> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();

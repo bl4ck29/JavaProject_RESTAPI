@@ -26,20 +26,20 @@ import javax.persistence.UniqueConstraint;
 
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "profile"})},
+@Table(name = "users", 
+uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "profile"})},
 	indexes = @Index(columnList = "user_name", name = "name_ind"))
 public class Users {
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id")
-	private Long id;
+	@Id @GeneratedValue(strategy = GenerationType.AUTO)	@Column(name = "user_id")
+	private int id;
 
     @NotBlank @Size(min = 4, max = 15) @Column(name = "user_name")
 	private String userName;
 	
-    @NotBlank @Column(length = 3)
-	private String login_type;
+    @NotBlank @Column(length = 3, name = "login_type")
+	private String loginType;
     
-    @Email @Size(max = 20)
+    @Email @NotBlank @Size(max = 20)
 	private String email;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -48,11 +48,10 @@ public class Users {
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Roles> roles = new HashSet<>();
 
-	@NotBlank @Size(min = 10, max = 200)
+	@NotBlank() @Size(min = 10, max = 200)
     private String profile;
 
-    @NotBlank @Size(min = 10, max = 100)
-	@Column(name = "user_password")
+    @NotBlank @Size(min = 10, max = 100) @Column(name = "user_password")
 	private String password;
 
 	@OneToMany(targetEntity=Transactions.class, mappedBy="user")    
@@ -61,23 +60,23 @@ public class Users {
 	public Users(){}
 	public Users(String user_name, String login_type, String email, String profile, String user_password){
 		this.userName = user_name;
-		this.login_type = login_type;
+		this.loginType = login_type;
 		this.email = email;
 		this.profile = profile;
 		this.password = user_password;
 	}
 
-	public void setId(Long id){this.id = id;}
+	public void setId(int id){this.id = id;}
 	public void setUserName(String user_name){this.userName = user_name;}
-	public void setLoginType(String login_type){this.login_type = login_type;}
+	public void setLoginType(String login_type){this.loginType = login_type;}
 	public void setEmail(String email){this.email = email;}
 	public void setProfile(String profile){this.profile = profile;}
 	public void setPassword(String user_password){this.password = user_password;}
 	public void setRoles(Set<Roles> roles){this.roles = roles;}
 
-	public Long getId(){return this.id;}
+	public int getId(){return this.id;}
 	public String getUserName(){return this.userName;}
-	public String getLoginType(){return this.login_type;}
+	public String getLoginType(){return this.loginType;}
 	public String getEmail(){return this.email;}
 	public String getProfile(){return this.profile;}
 	public String getPassword(){return this.password;}

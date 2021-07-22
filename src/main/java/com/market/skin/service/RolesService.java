@@ -5,6 +5,7 @@ import com.market.skin.repository.RolesRepository;
 import java.util.Optional;
 
 import com.market.skin.model.Roles;
+import com.market.skin.model.RolesName;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,29 +30,22 @@ public class RolesService {
     public void createRole(Roles role){
         repository.save(role);
     }
+    
     public Optional<Roles> deleteRole(int id){
         Optional<Roles> res = repository.findById(id);
         repository.deleteById(id);
         return res;
     }
 
-    // public List<Roles> findByRoleName(String name){
-    //     return repository.findByRoleName(name);
-    // }
+    public Optional<Roles> findByRoleName(RolesName name){
+        return repository.findByName(name);
+    }
     
     public void modifyDetails(Roles newRole){
         repository.findById(newRole.getId()).map(role->{
             role.setRoleName(newRole.getRoleName());
             return repository.save(role);
         });
-    }
-    
-    public Page<Roles> homePage(){
-        return repository.findAll(PageRequest.of(0, 3));
-    }
-
-    public Page<Roles> showPage(@PathVariable int page){
-        return repository.findAll(PageRequest.of(page, 12));
     }
 
     public Page<Roles> sortByAttr(String attr, int page, Boolean asc){

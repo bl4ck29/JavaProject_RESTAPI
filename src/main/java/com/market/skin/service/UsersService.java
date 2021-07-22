@@ -2,10 +2,6 @@ package com.market.skin.service;
 
 import java.util.Optional;
 
-import java.util.List;
-
-import com.market.skin.exception.UserExistedById;
-import com.market.skin.exception.UserIdNotFound;
 import com.market.skin.model.Users;
 import com.market.skin.repository.UsersRepository;
 import com.market.skin.security.service.UserDetailsImp;
@@ -26,11 +22,11 @@ public class UsersService implements UserDetailsService{
     @Autowired
     private UsersRepository repository;
 
-    public Optional<Users> findById(int id) throws UserIdNotFound{
+    public Optional<Users> findById(int id){
         return repository.findById(id);
     }
 
-    public void createUser(Users user) throws UserExistedById{
+    public void createUser(Users user){
         repository.save(user);
     }
     
@@ -42,8 +38,12 @@ public class UsersService implements UserDetailsService{
         return repository.findByUserName(name);
     }
 
-    public List<Users> findByEmail(String email){
+    public Optional<Users> findByEmail(String email){
         return repository.findByEmail(email);
+    }
+
+    public Optional<Users> findByLoginType(String login_type){
+        return repository.findByloginType(login_type);
     }
 
     public void modify(Users newUser){

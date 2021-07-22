@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserDetailsImp  implements UserDetails{
     private static final long serialVersionUID = 1L;
-	private Long id;
+	private int id;
 	private String username;
 	private String email;
 	private String profile;
@@ -25,7 +25,7 @@ public class UserDetailsImp  implements UserDetails{
 	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImp(Long id, String username, String email, String password, String profile, String login_type,
+	public UserDetailsImp(int id, String username, String email, String password, String profile, String login_type,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -48,7 +48,7 @@ public class UserDetailsImp  implements UserDetails{
 		return authorities;
 	}
 
-	public Long getId(){return id;}
+	public int getId(){return id;}
 	public String getEmail(){return email;}
 	public String getLoginType(){return this.login_type;}
 	public String getProfile(){return this.profile;}

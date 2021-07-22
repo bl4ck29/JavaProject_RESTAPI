@@ -7,17 +7,16 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.market.skin.controller.payload.request.LoginRequest;
 import com.market.skin.controller.payload.request.SignupRequest;
@@ -30,6 +29,7 @@ import com.market.skin.repository.UsersRepository;
 import com.market.skin.repository.RolesRepository;
 import com.market.skin.security.jwt.JwtUtils;
 import com.market.skin.security.service.UserDetailsImp;
+import com.market.skin.service.UsersService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -40,6 +40,8 @@ public class AuthController {
     final private RolesRepository roleRepository;
     final private PasswordEncoder encoder;
     final private JwtUtils jwtUtils;
+    @Autowired
+    UsersService usersService;
 
     public AuthController (AuthenticationManager authenticationManager, UsersRepository userRepository, RolesRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
@@ -49,21 +51,30 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping("/signin")
+    @PostMapping(value = "/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), encoder.encode(loginRequest.getPassword())));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-		
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+        UserDetailsImp userDetails = (UserDetailsImp) usersService.loadUserByUsername(loginRequest.getUserName());
+        if (userDetails != null){
+            if(encoder.matches(loginRequest.getPassword().strip(), userDetails.getPassword().strip())){
+                String jwt= jwtUtils.generateJwtToken(userDetails);
+                List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+                return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(encoder.encode(loginRequest.getPassword()) + "\n"+ userDetails.getPassword() + encoder.matches(loginRequest.getPassword(), userDetails.getPassword()));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User name not found: " + loginRequest.getUserName());
+        
+        // Authentication authentication = authenticationManager.authenticate(
+        //     new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword().strip()));
+        // SecurityContextHolder.getContext().setAuthentication(authentication);
+        // String jwt = jwtUtils.generateJwtToken(authentication);
+        // UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+        // List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+        // return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    @PostMapping(value = "/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest){
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
@@ -103,6 +114,6 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Created user successfully."));
     }
 }

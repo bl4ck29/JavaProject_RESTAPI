@@ -37,7 +37,7 @@ public class PatternsService {
         return res;
     }
 
-    public List<Patterns> findByPatternName(String name){
+    public Optional<Patterns> findByPatternName(String name){
         return repository.findByPatternName(name);
     }
 

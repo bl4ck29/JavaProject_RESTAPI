@@ -12,7 +12,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity @Table(name = "items")
@@ -20,17 +20,17 @@ public class Items {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int item_id;
 
-    @NotBlank @Column(name = "gun_id")
+    @NotNull @Column(name = "gun_id")
     private int gunId;
 
     @ManyToOne()
     @JoinColumn(name="gun_id", referencedColumnName = "gun_id", insertable = false, updatable = false)    
     private Guns guns;
 
-    @NotBlank @Column(name = "pattern_id")
+    @NotNull @Column(name = "pattern_id")
     private int patternId;
 
-    @NotBlank @Column(name = "creator_id")
+    @NotNull @Column(name = "creator_id")
     private int creatorId;
 
     @Size(min = 10, max = 200) 

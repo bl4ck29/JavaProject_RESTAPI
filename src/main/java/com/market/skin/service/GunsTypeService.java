@@ -26,7 +26,7 @@ public class GunsTypeService {
         repository.save(gun);
     }
 
-    public List<GunsType> findByTypeName(String name){
+    public Optional<GunsType> findByTypeName(String name){
         return repository.findByTypeName(name);
     }
     
@@ -38,7 +38,7 @@ public class GunsTypeService {
     
     public void modifyDetails(GunsType newType){
         repository.findById(newType.getId()).map(gt->{
-            gt.setGunName(newType.getName());
+            gt.setTypeName(newType.getTypeName());
             return repository.save(gt);
         });
     }

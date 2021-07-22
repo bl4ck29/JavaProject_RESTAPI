@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.market.skin.model.Guns;
 import com.market.skin.repository.GunsRepository;
-import com.market.skin.exception.GunExistedById;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,16 @@ public class GunsService {
         return repository.findByTypeId(id);
     }
 
-    public void createGuns(Guns gun) throws GunExistedById{
+    public void modify(Guns other){
+        repository.findById(other.getId()).map(gun ->{
+            gun.setGunName(other.getGunName());
+            gun.setTypeId(other.getTypeId());
+            repository.save(gun);
+            return repository.save(gun);
+        }).orElseThrow();
+    }
+
+    public void createGuns(Guns gun){
         repository.save(gun);
     }
     public Optional<Guns> deleteGun(int id){
@@ -62,8 +70,8 @@ public class GunsService {
 
     public Page<Guns> sortByAttr(String attr, int page, Boolean asc){
         if(asc){
-            return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).ascending()));
+            return repository.findAll(PageRequest.of(page, 12, Sort.by(attr).ascending()));
         }
-        return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).descending()));
+        return repository.findAll(PageRequest.of(page, 12, Sort.by(attr).descending()));
     }
 }

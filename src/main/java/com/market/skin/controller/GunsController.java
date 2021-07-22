@@ -1,6 +1,5 @@
 package com.market.skin.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.market.skin.service.GunsService;
-import com.market.skin.exception.GunExistedById;
 import com.market.skin.model.Guns;
-import com.market.skin.exception.CantExecRequest;
 
 @RestController
 public class GunsController {
@@ -36,7 +34,7 @@ public class GunsController {
     }
 
     @GetMapping("/guns/find")
-    ResponseEntity<List<Guns>> findByGunName(@RequestParam(required=false, name = "attr") String attr ,@RequestParam(required=false, name = "value") String value)
+    ResponseEntity<?> findByGunName(@RequestParam(required=false, name = "attr") String attr ,@RequestParam(required=false, name = "value") String value)
     {
         if("name".equals(attr)){
             return ResponseEntity.status(HttpStatus.OK).body(service.findByGunName(value));
@@ -44,17 +42,22 @@ public class GunsController {
         if("typeid".equals(attr)){
             return ResponseEntity.status(HttpStatus.OK).body(service.findByTypeId(Integer.parseInt(value)));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No gun matched");
     }
 
-    @PutMapping("/guns")
-    ResponseEntity<Guns> createGun(@RequestBody Guns newGun) throws GunExistedById, CantExecRequest{
+    @PostMapping("/guns")
+    ResponseEntity<Guns> createGun(@RequestBody Guns newGun){
         Guns gun = new Guns();
         gun.setId(newGun.getId());
         gun.setTypeId(newGun.getTypeId());
         gun.setGunName(newGun.getGunName().strip());
         service.createGuns(gun);
         return ResponseEntity.status(HttpStatus.OK).body(gun);
+    }
+
+    @PutMapping("/guns")
+    void modifyDetails(@RequestBody Guns other){
+    
     }
     
     @DeleteMapping("/guns/{id}")
@@ -72,7 +75,8 @@ public class GunsController {
     }
 
     @GetMapping("/guns/all/sort/{page}")
-    Page<Guns> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc){
-        return service.sortByAttr(attr, page, asc);
+    Page<Guns> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") String asc){
+        Boolean sort = Boolean.parseBoolean(asc);
+        return service.sortByAttr(attr, page, sort);
     }
 }

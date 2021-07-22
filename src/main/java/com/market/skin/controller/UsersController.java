@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -32,10 +30,11 @@ public class UsersController {
         );
     }
 
-    @PutMapping("/users")
-    void createUser(@RequestBody Users newUser){
-        service.createUser(newUser);
-    }
+    // @PostMapping("/users")
+    // ResponseEntity<Users> createUser(@RequestBody Users newUser){
+    //     service.createUser(newUser);
+    //     return ResponseEntity.ok(newUser);
+    // }
     
     @DeleteMapping("/users/{id}")
     ResponseEntity<String> deleteUser(@PathVariable int id) {

@@ -1,6 +1,5 @@
 package com.market.skin.controller;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,10 +46,16 @@ public class TransController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    @PutMapping("/transactions")
+    @PostMapping("/transactions")
     ResponseEntity<Transactions> createGun(@RequestBody Transactions newTrans){
-        newTrans.setUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
+        newTrans.setUpdateTime(LocalDateTime.now());
         service.create(newTrans);
+        return ResponseEntity.status(HttpStatus.OK).body(newTrans);
+    }
+
+    @PostMapping("/transactions/test")
+    ResponseEntity<Transactions> test(@RequestBody Transactions newTrans){
+        newTrans.setUpdateTime(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(newTrans);
     }
     
@@ -60,7 +65,7 @@ public class TransController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("/transactions/all")
+    @GetMapping("/transactions/all/{page}")
     Page<Transactions> pageRequest(@PathVariable int page){
         if (page == 0){
             return service.homePage();
