@@ -60,7 +60,7 @@ public class AuthController {
                 List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
                 return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(encoder.encode(loginRequest.getPassword()) + "\n"+ userDetails.getPassword() + encoder.matches(loginRequest.getPassword(), userDetails.getPassword()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User name not found: " + loginRequest.getUserName());
         
@@ -76,12 +76,12 @@ public class AuthController {
     @PostMapping(value = "/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest){
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                 .badRequest()
-                .body(new MessageResponse("Error: Email is already in use!"));
+                .body("Error: Email is already in use!");
         }
 
         Users user = new Users(signUpRequest.getUserName(), signUpRequest.getLoginType(), signUpRequest.getEmail(), signUpRequest.getProfile(), encoder.encode(signUpRequest.getPassword()));
@@ -114,6 +114,6 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Created user successfully."));
+        return ResponseEntity.status(HttpStatus.OK).body("Created user successfully.");
     }
 }

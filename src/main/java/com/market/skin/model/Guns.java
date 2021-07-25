@@ -38,7 +38,7 @@ public class Guns {
     protected List<Items> items = new ArrayList<>();
 
     public Guns(){}
-    public Guns(int id, int type_id, String gun_name){
+    public Guns(int type_id, String gun_name){
         this.typeId = type_id;
         this.gunName = gun_name;
     }

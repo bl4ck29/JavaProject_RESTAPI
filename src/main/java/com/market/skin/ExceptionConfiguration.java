@@ -29,7 +29,6 @@ public class ExceptionConfiguration {
 
         r.setExceptionMappings(mapping);
 		r.setExceptionAttribute("ex");
-		// r.setWarnLogCategory("demo1.ExceptionLogger");
         r.setDefaultErrorView("defaultErrorPage");
         return r;
     }

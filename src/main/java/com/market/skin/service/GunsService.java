@@ -22,6 +22,10 @@ public class GunsService {
         this.repository = repository;
     }
 
+    public List<Guns> findAll(){
+        return repository.findAll();
+    }
+
     public Optional<Guns> findById(int id){
         return repository.findById(id);
     }

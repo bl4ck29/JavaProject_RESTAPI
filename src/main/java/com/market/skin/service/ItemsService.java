@@ -1,5 +1,7 @@
 package com.market.skin.service;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +31,13 @@ public class ItemsService {
     public Items create(Items newItem){
         repository.save(newItem);
         return newItem;
+    }
+
+    public Items findByGunIdAndPatternId(int patt_id, int gun_id){
+        List<Items> gun = repository.findByGunId(gun_id);
+        List<Items> patt = repository.findByPatternId(patt_id);
+        gun.retainAll(patt);
+        return gun.get(0);
     }
 
     public List<Items> findByGunId(int id){

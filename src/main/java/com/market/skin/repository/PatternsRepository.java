@@ -13,5 +13,5 @@ public interface PatternsRepository extends JpaRepository<Patterns, Integer>{
     List<Patterns> findAll();
 
     @Query(value =  "select p from patterns p where p.patterb_name = :name")
-    Optional<Patterns> findByPatternName(@Param("name") String pattern_name);
+    List<Patterns> findByPatternName(@Param("name") String pattern_name);
 }

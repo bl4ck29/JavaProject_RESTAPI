@@ -7,15 +7,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Entity @Table(name = "items")
+@Entity @Table(name = "items",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"pattern_id", "gun_id"})},
+    indexes = @Index(columnList = "item_id", name = "item_ind"))
 public class Items {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int item_id;
@@ -45,8 +49,7 @@ public class Items {
     private List<Transactions> likedTrans;
 
     public Items(){}
-    public Items(int id, int gun_id, int patt_id, int cre_id, String image){
-        this.item_id = id;
+    public Items(int gun_id, int patt_id, int cre_id, String image){
         this.gunId = gun_id;
         this.patternId = patt_id;
         this.creatorId = cre_id;

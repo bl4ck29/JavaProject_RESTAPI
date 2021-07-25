@@ -3,6 +3,7 @@ package com.market.skin.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Patterns;
 import com.market.skin.repository.PatternsRepository;
 
@@ -22,6 +23,9 @@ public class PatternsService {
         this.repository = repository;
     }
 
+    public List<Patterns> findAll(){
+        return repository.findAll();
+    }
     public Optional<Patterns> findById(int id){
         return repository.findById(id);
     }
@@ -37,11 +41,11 @@ public class PatternsService {
         return res;
     }
 
-    public Optional<Patterns> findByPatternName(String name){
+    public List<Patterns> findByPatternName(String name){
         return repository.findByPatternName(name);
     }
 
-    public void modify(Patterns newPatt){
+    public void modify(Patterns newPatt) throws RecordNotFoundException{
         repository.findById(newPatt.getId()).map(patt->{
             patt.setName(newPatt.getName());
             return repository.save(patt);
