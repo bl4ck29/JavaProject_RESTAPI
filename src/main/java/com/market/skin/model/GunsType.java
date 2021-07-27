@@ -7,6 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -17,8 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
-@Table(name = "guns_type", uniqueConstraints = {@UniqueConstraint(columnNames = {"type_name"})})
+@Table(name = "guns_type",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"type_name"})},
+    indexes= {@Index(columnList ="type_name", name="type_name_ind")})
+
+@Getter
+@Setter
 public class GunsType {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "type_id")
@@ -34,14 +43,6 @@ public class GunsType {
     public GunsType(String type_name){
         this.typeName = type_name;
     }
-
-    public void setId(int id){this.id = id;}
-    public void setTypeName(String type_name){this.typeName = type_name;}
-
-    public int getId(){return this.id;}
-    public String getTypeName(){return this.typeName;}
-
-    public List<Guns> getGuns(){return this.guns;}
 
     @Override
     public boolean equals(Object other){

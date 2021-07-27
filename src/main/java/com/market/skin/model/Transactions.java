@@ -18,9 +18,16 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotBlank;
 
+import lombok.Getter;
+import lombok.Setter;
 @Entity @Table(name = "transactions",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "item_id"})},
-    indexes = @Index(columnList = "trans_id", name = "trans_ind"))
+    indexes = {
+        @Index(columnList="item_id", name="trans_item_ind"),
+        @Index(columnList = "trans_id, user_id", name = "trans_ind"),
+        @Index(columnList ="user_id", name = "trans_user_ind")})
+@Getter
+@Setter
 public class Transactions {
     @Id @GeneratedValue(strategy = GenerationType.AUTO) @Column(name = "trans_id")
     private int id;
@@ -42,26 +49,12 @@ public class Transactions {
     @NotBlank @Column(length = 3)
     private String status;
 
-
-    public Transactions(){}
     public Transactions(int user_id, int item_id, LocalDateTime time, String stat){
         this.userId = user_id;
         this.itemId = item_id;
         this.update_time = time;
         this.status = stat;
     }
-
-    public void setId(int id){this.id = id;}
-    public void setUserId(int user_id){this.userId = user_id;}
-    public void setItemId(int id){this.itemId = id;}
-    public void setUpdateTime(LocalDateTime time){this.update_time = time;}
-    public void setStatus(String stt){this.status = stt;}
-
-    public int getId(){return this.id;}
-    public int getUserId(){return this.userId;}
-    public int getItemId(){return this.itemId;}
-    public LocalDateTime getUpdateTime(){return this.update_time;}
-    public String getStatus(){return this.status;}
 
     @Override
     public boolean equals(Object other){

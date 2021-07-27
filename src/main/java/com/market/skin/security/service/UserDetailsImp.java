@@ -11,9 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public class UserDetailsImp  implements UserDetails{
     private static final long serialVersionUID = 1L;
 	private int id;
@@ -38,7 +35,7 @@ public class UserDetailsImp  implements UserDetails{
 
 	public static UserDetailsImp build(Users user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
+				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
 				.collect(Collectors.toList());
 		return new UserDetailsImp(user.getId(), user.getUserName(), user.getEmail(), user.getPassword(), user.getProfile(), user.getLoginType(),  authorities);
 	}

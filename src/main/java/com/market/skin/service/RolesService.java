@@ -2,16 +2,21 @@ package com.market.skin.service;
 
 import com.market.skin.repository.RolesRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.market.skin.exception.ConstraintViolationException;
+import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Roles;
 import com.market.skin.model.RolesName;
+import com.market.skin.model.DTO.RolesDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.data.domain.Sort;
 
 @Service
@@ -19,39 +24,70 @@ public class RolesService {
     @Autowired
     private RolesRepository repository;
 
+    public RolesDTO toRolesDTO(Roles role){
+        return new RolesDTO(role.getName(), role.getRole_id());
+    }
+
     public RolesService(RolesRepository repository){
         this.repository = repository;
     }
 
-    public Optional<Roles> findById(int id){
-        return repository.findById(id);
+    public RolesDTO findById(int id){
+        Optional<Roles> result = repository.findById(id);
+        if(result.isEmpty()){
+            throw new RecordNotFoundException("Not record's id matched: "+id);
+        }
+        return this.toRolesDTO(result.get());
     }
 
     public void createRole(Roles role){
-        repository.save(role);
-    }
-    
-    public Optional<Roles> deleteRole(int id){
-        Optional<Roles> res = repository.findById(id);
-        repository.deleteById(id);
-        return res;
-    }
-
-    public Optional<Roles> findByRoleName(RolesName name){
-        return repository.findByName(name);
-    }
-    
-    public void modifyDetails(Roles newRole){
-        repository.findById(newRole.getId()).map(role->{
-            role.setRoleName(newRole.getRoleName());
-            return repository.save(role);
-        });
-    }
-
-    public Page<Roles> sortByAttr(String attr, int page, Boolean asc){
-        if(asc){
-            return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).ascending()));
+        try{
+            repository.save(role);
+        } catch (ConstraintViolationException ex){
+            throw new RecordNotFoundException("Role is already existed.");
         }
-        return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).descending()));
+    }
+    
+    public void deleteRole(int id){
+        if(repository.findById(id).isEmpty()){
+            throw new RecordNotFoundException("No record's id matched: " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    public RolesDTO findByRoleName(RolesName name){
+        Optional<Roles> result = repository.findByName(name);
+        if(result == null){
+            throw new RecordNotFoundException("No record's name matched: " + name);
+        }
+        return this.toRolesDTO(result.get());
+    }
+    
+    public void modify(Roles newRole){
+        repository.findById(newRole.getRole_id()).map(role->{
+            role.setName(newRole.getName());
+            return repository.save(role);
+        }).orElseThrow(() -> new RecordNotFoundException());
+    }
+
+    public Page<RolesDTO> showPage(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<Roles> lstRoles = repository.findAll(pageRequest).getContent();
+        List<RolesDTO> result = new ArrayList<>();
+        for(Roles item : lstRoles){
+            result.add(this.toRolesDTO(item));
+        }
+        return new PageImpl<>(result, pageRequest, repository.findAll().size());
+    }
+
+    public Page<RolesDTO> sortByAttr(String attr, int page, int size, Boolean asc){
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(attr).descending());
+        if(asc){pageRequest = PageRequest.of(page, size, Sort.by(attr).ascending());}
+        List<Roles> lstRoles = repository.findAll(pageRequest).getContent();
+        List<RolesDTO> result = new ArrayList<>();
+        for(Roles item : lstRoles){
+            result.add(this.toRolesDTO(item));
+        }
+        return new PageImpl<>(result, pageRequest, repository.findAll().size());
     }
 }

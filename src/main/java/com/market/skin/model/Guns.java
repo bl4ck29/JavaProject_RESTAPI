@@ -11,14 +11,23 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Entity @Table(name = "guns")
+import lombok.Setter;
+import lombok.Getter;
+
+@Entity @Table(name = "guns",
+    uniqueConstraints = {@UniqueConstraint(columnNames={"gun_name"})},
+    indexes = @Index(columnList = "gun_name", name = "gun_name_ind"))
+@Setter
+@Getter
 public class Guns {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int gun_id;
@@ -42,15 +51,6 @@ public class Guns {
         this.typeId = type_id;
         this.gunName = gun_name;
     }
-
-    public void setId(int id){this.gun_id = id;}
-    public void setTypeId(int id){this.typeId = id;}
-    public void setGunName(String name){this.gunName = name;}
-
-    public int getId(){return this.gun_id;}
-    public int getTypeId(){return this.typeId;}
-    public String getGunName(){return this.gunName;}
-    public List<Items> getItems(){return this.items;}
 
     @Override
     public boolean equals(Object other){

@@ -11,12 +11,19 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Entity @Table(name = "patterns")
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity 
+@Table(name = "patterns", indexes={@Index(columnList="pattern_name", name="pattern_name_ind")})
+@Getter
+@Setter
 public class Patterns {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int pattern_id;
@@ -33,19 +40,12 @@ public class Patterns {
         this.patternName = name;
     }
 
-    public void setId(int id){this.pattern_id = id;}
-    public void setName(String name){this.patternName = name;}
-
-    public int getId(){return this.pattern_id;}
-    public String getName(){return this.patternName;}
-    public List<Items> getItems(){return this.items;}
-
     @Override
     public boolean equals(Object other){
         if((other == null) || (other.getClass() != this.getClass())){
             return false;
         }
         Patterns patt = (Patterns) other;
-        return Objects.equals(patt.getName(), this.patternName);
+        return Objects.equals(patt.getPatternName(), this.patternName);
     }
 }

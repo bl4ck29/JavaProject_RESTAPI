@@ -24,11 +24,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+
 
 @Entity
 @Table(name = "users", 
 uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "profile"})},
 	indexes = @Index(columnList = "user_name", name = "name_ind"))
+@Getter
+@Setter
 public class Users {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)	@Column(name = "user_id")
 	private int id;
@@ -57,6 +62,9 @@ public class Users {
 	@OneToMany(targetEntity=Transactions.class, mappedBy="user")    
 	protected List<Transactions> trans = new ArrayList<>();
 
+	@OneToMany(targetEntity = Items.class, mappedBy = "cre_id")
+	protected List<Items> lstItems = new ArrayList<>();
+
 	public Users(){}
 	public Users(String user_name, String login_type, String email, String profile, String user_password){
 		this.userName = user_name;
@@ -65,23 +73,6 @@ public class Users {
 		this.profile = profile;
 		this.password = user_password;
 	}
-
-	public void setId(int id){this.id = id;}
-	public void setUserName(String user_name){this.userName = user_name;}
-	public void setLoginType(String login_type){this.loginType = login_type;}
-	public void setEmail(String email){this.email = email;}
-	public void setProfile(String profile){this.profile = profile;}
-	public void setPassword(String user_password){this.password = user_password;}
-	public void setRoles(Set<Roles> roles){this.roles = roles;}
-
-	public int getId(){return this.id;}
-	public String getUserName(){return this.userName;}
-	public String getLoginType(){return this.loginType;}
-	public String getEmail(){return this.email;}
-	public String getProfile(){return this.profile;}
-	public String getPassword(){return this.password;}
-	public List<Transactions> getTrans(){return this.trans;}
-	public Set<Roles> getRoles(){return this.roles;}
 	
 	@Override
 	public boolean equals(Object other){

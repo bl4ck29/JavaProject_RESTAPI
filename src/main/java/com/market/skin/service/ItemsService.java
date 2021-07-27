@@ -1,81 +1,102 @@
 package com.market.skin.service;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.market.skin.exception.ConstraintViolationException;
+import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Items;
+import com.market.skin.model.DTO.ItemsDTO;
 import com.market.skin.repository.ItemsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.data.domain.Sort;
 
 @Service
 public class ItemsService {
     @Autowired
-    private ItemsRepository repository;
+    ItemsRepository repository;
 
     public ItemsService(ItemsRepository repository){
         this.repository = repository;
     }
 
-    public Optional<Items> findById(int id){
-        return repository.findById(id);
+    public ItemsDTO toItemsDTO(Items item){
+        return new ItemsDTO(
+            item.getItem_id(), 
+            item.getGuns().getGunName(), 
+            item.getCre_id().getUserName(), 
+            item.getPatterns().getPatternName(), 
+            item.getItem_image());
     }
 
-    public Items create(Items newItem){
-        repository.save(newItem);
-        return newItem;
+    public void create(Items item){
+        try{
+            repository.save(item);
+        }catch(ConstraintViolationException ex){
+            throw new ConstraintViolationException("Item is already existed");
+        }
     }
 
-    public Items findByGunIdAndPatternId(int patt_id, int gun_id){
+    public ItemsDTO findById(int id){
+        Optional<Items> result = repository.findById(id);
+        if(result.isEmpty()){
+            throw new RecordNotFoundException("No record's id matched:" + id);
+        }
+        return this.toItemsDTO(result.get());
+    }
+
+    public ItemsDTO findByGunIdAndPatternId(int patt_id, int gun_id){
         List<Items> gun = repository.findByGunId(gun_id);
         List<Items> patt = repository.findByPatternId(patt_id);
-        gun.retainAll(patt);
-        return gun.get(0);
+        if(gun.retainAll(patt)){
+            Items item = gun.get(0);
+            return this.toItemsDTO(item);
+        }
+        throw new RecordNotFoundException("No record matches id:%d, pattern:%d".formatted(gun_id, patt_id));
     }
 
-    public List<Items> findByGunId(int id){
-        return repository.findByGunId(id);
-    }
 
-    public List<Items> findByPatternId(int id){
-        return repository.findByPatternId(id);
-    }
-
-    public Optional<Items> deleteById(int id){
-        Optional<Items> res = repository.findById(id);
+    public void deleteById(int id){
+        if(repository.findById(id) == null){
+            throw new RecordNotFoundException();
+        }
         repository.deleteById(id);
-        return res;
     }
 
     public void modifyDetails(Items item){
-        repository.findById(item.getId()).map( i->{
+        repository.findById(item.getItem_id()).map( i->{
             i.setCreatorId(item.getCreatorId());
             i.setGunId(item.getGunId());
-            i.setImage(item.getImage());
+            i.setItem_image(item.getItem_image());;
             i.setPatternId(item.getPatternId());
             return repository.save(i);
-        });
+        }).orElseThrow(() -> new RecordNotFoundException());
     }
 
-    public Page<Items> homePage(){
-        return repository.findAll(PageRequest.of(0, 3));
-    }
-
-    public Page<Items> showPage(@PathVariable int page){
-        return repository.findAll(PageRequest.of(page, 12));
-    }
-
-    public Page<Items> sortByAttr(String attr, int page, Boolean asc){
-        if(asc){
-            return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).ascending()));
+    public Page<ItemsDTO> showPage(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<Items> lstItems = repository.findAll(pageRequest).getContent();
+        List<ItemsDTO> result = new ArrayList<>();
+        for(Items item : lstItems){
+            result.add(this.toItemsDTO(item));
         }
-        return repository.findAll(PageRequest.of(page, 9, Sort.by(attr).descending()));
+        return new PageImpl<>(result, pageRequest, repository.findAll().size());
+    }
+
+    public Page<ItemsDTO> sortByAttr(String attr, int page, int size, Boolean asc){
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(attr).descending());
+        if(asc){pageRequest = PageRequest.of(page, size, Sort.by(attr).ascending());}
+        List<Items> lstItems = repository.findAll(pageRequest).getContent();
+        List<ItemsDTO> result = new ArrayList<>();
+        for(Items item : lstItems){
+            result.add(this.toItemsDTO(item));
+        }
+        return new PageImpl<>(result, pageRequest, repository.findAll().size());
     }
 }

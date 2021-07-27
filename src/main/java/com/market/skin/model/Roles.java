@@ -11,7 +11,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 @Entity @Table(name = "roles")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Roles{
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int role_id;
@@ -20,20 +27,10 @@ public class Roles{
     @Column(length = 20, name = "role_name")
     private RolesName name;
 
-    // @OneToMany(targetEntity=Users.class, mappedBy="user_role",cascade=CascadeType.ALL, fetch = FetchType.LAZY)    
-    // protected List<Users> users = new ArrayList<>();
-
-    public Roles(){}
     public Roles(int id, RolesName name){
         this.role_id = id;
         this.name = name;
     }
-    public void setId(int id){this.role_id = id;}
-    public void setRoleName(RolesName name){this.name = name;}
-
-    public int getId(){return this.role_id;}
-    public RolesName getRoleName(){return this.name;}
-    // public List<Users> getUsers(){return this.users;}
 
     @Override
     public boolean equals(Object other){
@@ -41,6 +38,6 @@ public class Roles{
             return false;
         }
         Roles role = (Roles) other;
-        return Objects.equals(role.getId(), this.role_id);
+        return Objects.equals(role.getRole_id(), this.role_id);
     }
 }

@@ -17,9 +17,14 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import lombok.Setter;
+import lombok.Getter;
+
 @Entity @Table(name = "items",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"pattern_id", "gun_id"})},
     indexes = @Index(columnList = "item_id", name = "item_ind"))
+@Setter
+@Getter
 public class Items {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int item_id;
@@ -36,6 +41,10 @@ public class Items {
 
     @NotNull @Column(name = "creator_id")
     private int creatorId;
+
+    @ManyToOne()
+    @JoinColumn(name ="creator_id", referencedColumnName= "user_id", insertable = false, updatable = false)
+    protected Users cre_id;
 
     @Size(min = 10, max = 200) 
     private String item_image;
@@ -55,18 +64,6 @@ public class Items {
         this.creatorId = cre_id;
         this.item_image = image;
     }
-
-    public void setId(int id){this.item_id = id;}
-    public void setGunId(int id){this.gunId = id;}
-    public void setPatternId(int id){this.patternId = id;}
-    public void setCreatorId(int id){this.creatorId = id;}
-    public void setImage(String image){this.item_image = image;}
-
-    public int getId(){return this.item_id;}
-    public int getGunId(){return this.gunId;}
-    public int getPatternId(){return this.patternId;}
-    public int getCreatorId(){return this.creatorId;}
-    public String getImage(){return this.item_image;}
 
     @Override
     public boolean equals(Object other){
