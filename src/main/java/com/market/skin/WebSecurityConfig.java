@@ -3,6 +3,8 @@ package com.market.skin;
 import com.market.skin.security.jwt.AuthTokenFilter;
 import com.market.skin.security.jwt.JwtUtils;
 import com.market.skin.service.UsersService;
+import com.market.skin.controller.UsersController;
+import com.market.skin.repository.UsersRepository;
 import com.market.skin.security.jwt.AuthEntryPointJwt;
 
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -33,6 +36,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		this.service = usersService;
 		this.unauthorizedHandler = unauthorizedHandler;
 		this.jwtUtils = jwtUtils;
+	}
+
+	@Bean
+	UsersController usersController(UserDetailsService userDetailsService){
+		return new UsersController(userDetailsService);
+	}
+	@Bean
+	UsersService usersService(UsersRepository usersRepository){
+		return new UsersService(usersRepository);
 	}
 
 	@Bean
@@ -61,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		http.cors().and().csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and().authorizeRequests().antMatchers("/api/auth/**", "/items/**" ).permitAll()
+			.and().authorizeRequests().antMatchers("/api/auth/**", "/**" ).permitAll()
 			.anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

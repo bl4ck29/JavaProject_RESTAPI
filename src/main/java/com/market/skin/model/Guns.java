@@ -20,6 +20,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+// import io.swagger.annotations.ApiModel;
 import lombok.Setter;
 import lombok.Getter;
 
@@ -28,6 +29,7 @@ import lombok.Getter;
     indexes = @Index(columnList = "gun_name", name = "gun_name_ind"))
 @Setter
 @Getter
+// @ApiModel(value = "Guns Model")
 public class Guns {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int gun_id;

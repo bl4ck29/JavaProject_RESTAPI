@@ -23,7 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UsersService implements UserDetailsService{
     @Autowired
-    private UsersRepository repository;
+    UsersRepository repository;
+
+    public UsersService(UsersRepository repository){
+        this.repository = repository;
+    }
 
     public UsersDTO toUsersDTO(Users user){
         return new UsersDTO(user.getUserName(), user.getLoginType(), user.getEmail(), user.getProfile());

@@ -13,4 +13,5 @@ public class ItemsDTO {
     private String creator_id;
     private String pattern;
     private String image;
+    private float price;
 }

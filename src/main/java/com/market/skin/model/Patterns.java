@@ -17,13 +17,17 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+// import io.swagger.annotations.ApiModel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity 
 @Table(name = "patterns", indexes={@Index(columnList="pattern_name", name="pattern_name_ind")})
 @Getter
 @Setter
+@NoArgsConstructor
+// @ApiModel(value = "Patterns Model")
 public class Patterns {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int pattern_id;
@@ -34,9 +38,7 @@ public class Patterns {
     @OneToMany(targetEntity = Items.class, mappedBy = "patterns", cascade = CascadeType.ALL, fetch = FetchType.LAZY)    
     private List<Items> items = new ArrayList<>();
 
-    public Patterns(){}
-    public Patterns(int id, String name){
-        this.pattern_id = id;
+    public Patterns(String name){
         this.patternName = name;
     }
 

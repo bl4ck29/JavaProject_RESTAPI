@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+// import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/items")
+// @Api(value = "Item APIs")
 public class ItemsController {
     @Autowired
     ItemsService service;
@@ -28,31 +30,39 @@ public class ItemsController {
         this.service = service;
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<MessageResponse> find(@PathVariable int id){
-        return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET)
-            .data(service.findById(id)).build());
+    @GetMapping("")
+    public ResponseEntity<MessageResponse> find(@RequestParam("attr") String attr, @RequestParam("value") String value){
+        switch (attr) {
+            case "id":
+                return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.findById(Integer.parseInt(value))).build());
+            case "patternid":
+                return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.findPatternId(Integer.parseInt(value))).build());
+            case "gunid":
+                return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.findByGunId(Integer.parseInt(value))).build());    
+        }
+        return null;
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('CREATOR')")
-    ResponseEntity<MessageResponse> createItems(@RequestBody Items newItem)throws MissingServletRequestParameterException{
+    public ResponseEntity<MessageResponse> createItems(@RequestBody Items newItem)throws MissingServletRequestParameterException{
         service.create(newItem);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
     }
 
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<MessageResponse> deleteItem(@PathVariable int id){
+    @PreAuthorize("hadRole('ADMIN')")
+    public ResponseEntity<MessageResponse> deleteItem(@PathVariable int id){
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
     }
 
     @GetMapping("/page")
-    ResponseEntity<MessageResponse> page(@RequestParam("page") int page, @RequestParam int size){
+    public ResponseEntity<MessageResponse> page(@RequestParam("page") int page, @RequestParam int size){
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.showPage(page, size)).build());
     }
 
-    @GetMapping("/sort")
-    ResponseEntity<MessageResponse> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc, @RequestParam("size") int size){
+    @GetMapping("/sort/{page}")
+    public ResponseEntity<MessageResponse> sort(@PathVariable int page, @RequestParam("attr") String attr, @RequestParam("asc") Boolean asc, @RequestParam("size") int size){
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.sortByAttr(attr, page, size, asc)).build());
     }
 }

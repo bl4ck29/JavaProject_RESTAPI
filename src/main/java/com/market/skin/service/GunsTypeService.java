@@ -3,8 +3,11 @@ package com.market.skin.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.market.skin.exception.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.GunsType;
 import com.market.skin.model.DTO.TypesDTO;
@@ -30,6 +33,12 @@ public class GunsTypeService {
         this.repository = repository;
     }
 
+    public List<TypesDTO> findAll(){
+        return repository.findAll().stream().map( gt ->{
+            return this.toTypesDTO(gt);
+        }).collect(Collectors.toList());
+    }
+
     public TypesDTO findById(int id){
         Optional<GunsType> result = repository.findById(id);
         if (result.isEmpty()){
@@ -42,13 +51,13 @@ public class GunsTypeService {
         try{
             repository.save(gun);
         } catch(ConstraintViolationException ex){
-            throw new ConstraintViolationException("Type already existed");
+            throw new ConstraintViolation("Type already existed");
         }
     }
 
     public TypesDTO findByTypeName(String name){
         Optional<GunsType> result = repository.findByTypeName(name);
-        if(result == null){
+        if(result.isEmpty()){
             throw new RecordNotFoundException();
         }
         return this.toTypesDTO(repository.findByTypeName(name).get());

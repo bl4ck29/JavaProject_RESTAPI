@@ -16,9 +16,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+
+// import io.swagger.annotations.ApiModel;
+
 import javax.validation.constraints.NotBlank;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Entity @Table(name = "transactions",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "item_id"})},
@@ -28,6 +32,8 @@ import lombok.Setter;
         @Index(columnList ="user_id", name = "trans_user_ind")})
 @Getter
 @Setter
+@NoArgsConstructor
+// @ApiModel(value = "Transactions Model")
 public class Transactions {
     @Id @GeneratedValue(strategy = GenerationType.AUTO) @Column(name = "trans_id")
     private int id;

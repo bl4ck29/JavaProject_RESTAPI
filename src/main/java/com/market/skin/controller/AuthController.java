@@ -34,9 +34,12 @@ import com.market.skin.security.jwt.JwtUtils;
 import com.market.skin.security.service.UserDetailsImp;
 import com.market.skin.service.UsersService;
 
+// import io.swagger.annotations.Api;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+// @Api(value = "Authentication APIs")
 public class AuthController {
     final private AuthenticationManager authenticationManager;
     final private UsersRepository userRepository;

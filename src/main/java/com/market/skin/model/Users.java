@@ -10,6 +10,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+// import io.swagger.annotations.ApiModel;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,6 +36,7 @@ uniqueConstraints = {@UniqueConstraint(columnNames = {"user_name", "email", "pro
 	indexes = @Index(columnList = "user_name", name = "name_ind"))
 @Getter
 @Setter
+// @ApiModel(value = "Users Model")
 public class Users {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)	@Column(name = "user_id")
 	private int id;

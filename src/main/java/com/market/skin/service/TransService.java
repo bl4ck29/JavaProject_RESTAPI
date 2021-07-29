@@ -1,14 +1,20 @@
 package com.market.skin.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.market.skin.exception.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
+import com.market.skin.controller.payload.request.ModifyTransactionRequest;
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
+import com.market.skin.exception.UnauthorizedOwnerException;
 import com.market.skin.model.Items;
 import com.market.skin.model.Transactions;
+import com.market.skin.model.Users;
 import com.market.skin.model.DTO.ItemsDTO;
 import com.market.skin.model.DTO.TransactionDTO;
 import com.market.skin.repository.TransRepository;
@@ -25,7 +31,7 @@ public class TransService {
     @Autowired
     private TransRepository repository;
     @Autowired
-    private ItemsService itemsService;
+    ItemsService itemsService;
 
     public TransactionDTO toTransactionDTO(Transactions trans){
         List<ItemsDTO> result = new ArrayList<>();
@@ -53,7 +59,7 @@ public class TransService {
             repository.save(trans);
         }
         catch(ConstraintViolationException ex){
-            throw new RecordNotFoundException("Transaction is already existed.");
+            throw new ConstraintViolation("Transaction is already existed.");
         }
     }
 
@@ -95,13 +101,20 @@ public class TransService {
         }).collect(Collectors.toList());
     }
 
-    public void modify(Transactions newTrans){
-        repository.findById(newTrans.getId()).map(trans->{
-            trans.setItemId(newTrans.getItemId());
-            trans.setStatus(newTrans.getStatus());
-            trans.setUpdate_time(newTrans.getUpdate_time());
-            return repository.save(trans);
-        }).orElseThrow(()-> new RecordNotFoundException("No record's id matched: "));
+    public void modify(ModifyTransactionRequest request){
+        Users user = request.getUser();
+        Transactions trans = request.getTrans();
+        if(user.getId() == trans.getUserId()){
+            repository.findById(trans.getId()).map(tran->{
+                tran.setItemId(trans.getItemId());
+                tran.setStatus(trans.getStatus());
+                tran.setUpdate_time(LocalDateTime.now());
+                return repository.save(tran);
+            }).orElseThrow(()-> new RecordNotFoundException("No record's id matched: "));
+        }
+        else{
+            throw new UnauthorizedOwnerException("You are not the owner of this transaction?");
+        }
     }
 
     public Page<TransactionDTO> showPage(int page, int size){

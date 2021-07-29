@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.market.skin.exception.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Patterns;
 import com.market.skin.model.DTO.PatternsDTO;
@@ -43,7 +45,7 @@ public class PatternsService {
             repository.save(newPatt);
         }
         catch(ConstraintViolationException ex){
-            throw new ConstraintViolationException("Patterns already existed.");
+            throw new ConstraintViolation("Patterns already existed.");
         }
     }
 

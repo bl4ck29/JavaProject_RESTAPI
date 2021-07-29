@@ -2,10 +2,13 @@ package com.market.skin.service;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolationException;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.market.skin.exception.ConstraintViolationException;
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Guns;
 import com.market.skin.model.DTO.GunsDTO;
@@ -73,7 +76,7 @@ public class GunsService {
             repository.save(gun);
         }
         catch(ConstraintViolationException ex){
-            throw new ConstraintViolationException("Gun already existed.");
+            throw new ConstraintViolation("Gun already existed.");
         }
     }
 

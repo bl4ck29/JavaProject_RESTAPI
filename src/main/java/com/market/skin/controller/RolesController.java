@@ -29,7 +29,7 @@ public class RolesController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     ResponseEntity<MessageResponse> find(@RequestParam("attr") String attr, @RequestParam("value") String value){
         switch (attr) {
             case "id":
@@ -40,15 +40,15 @@ public class RolesController {
         return null;
     }
 
-    @PostMapping("/create")
-    ResponseEntity<MessageResponse> create(@RequestBody Roles role){
-        service.createRole(role);
-        return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
-    }
+    // @PostMapping("/create")
+    // ResponseEntity<MessageResponse> create(@RequestBody Roles role){
+    //     service.createRole(role);
+    //     return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
+    // }
 
-    @DeleteMapping("/delete/{id}")
-    ResponseEntity<MessageResponse> delete(@PathVariable int id){
-        service.deleteRole(id);
-        return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());
-    }
+    // @DeleteMapping("/delete/{id}")
+    // ResponseEntity<MessageResponse> delete(@PathVariable int id){
+    //     service.deleteRole(id);
+    //     return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());
+    // }
 }

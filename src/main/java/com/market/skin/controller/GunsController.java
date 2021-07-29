@@ -2,6 +2,7 @@ package com.market.skin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +18,11 @@ import com.market.skin.controller.payload.response.MessageResponse;
 import com.market.skin.model.Guns;
 import com.market.skin.model.SuccessCode;
 
+// import io.swagger.annotations.Api;
+
 @RestController
 @RequestMapping("/guns")
+// @Api(value = "Gun APIs")
 public class GunsController {
     @Autowired
     private final GunsService service;
@@ -27,7 +31,7 @@ public class GunsController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     ResponseEntity<MessageResponse> find(@RequestParam("attr") String attr, @RequestParam("value") String value){
         switch (attr) {
             case "id":
@@ -45,18 +49,22 @@ public class GunsController {
 
 
     @PostMapping("/create")
+    @PreAuthorize("hadRole('ADMIN')")
     ResponseEntity<MessageResponse> createGun(@RequestBody Guns newGun){
         service.createGuns(newGun);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
     }
 
-    @PutMapping("/modify")
-    ResponseEntity<MessageResponse> modifyDetails(@RequestBody Guns other){
+    @PutMapping("/modify/{id}")
+    @PreAuthorize("hadRole('ADMIN')")
+    ResponseEntity<MessageResponse> modifyDetails(@RequestBody Guns other, @PathVariable int id){
+        other.setGun_id(id);
         service.modify(other);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());
     }
     
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hadRole('ADMIN')")
     ResponseEntity<MessageResponse> deleteGun(@PathVariable int id){
         service.deleteGun(id);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());

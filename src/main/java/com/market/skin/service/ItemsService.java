@@ -3,8 +3,11 @@ package com.market.skin.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.market.skin.exception.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Items;
 import com.market.skin.model.DTO.ItemsDTO;
@@ -32,14 +35,15 @@ public class ItemsService {
             item.getGuns().getGunName(), 
             item.getCre_id().getUserName(), 
             item.getPatterns().getPatternName(), 
-            item.getItem_image());
+            item.getItem_image(),
+            item.getPrice());
     }
 
     public void create(Items item){
         try{
             repository.save(item);
         }catch(ConstraintViolationException ex){
-            throw new ConstraintViolationException("Item is already existed");
+            throw new ConstraintViolation("Item is already existed");
         }
     }
 
@@ -49,6 +53,26 @@ public class ItemsService {
             throw new RecordNotFoundException("No record's id matched:" + id);
         }
         return this.toItemsDTO(result.get());
+    }
+
+    public List<ItemsDTO> findPatternId(int id){
+        List<Items> result = repository.findByPatternId(id);
+        if(result.isEmpty()){
+            throw new RecordNotFoundException("No record's id matched:" + id);
+        }
+        return result.stream().map(item ->{
+            return this.toItemsDTO(item);
+        }).collect(Collectors.toList());
+    }
+
+    public List<ItemsDTO> findByGunId(int id){
+        List<Items> result = repository.findByGunId(id);
+        if(result.isEmpty()){
+            throw new RecordNotFoundException("No record's id matched:" + id);
+        }
+        return result.stream().map(item ->{
+            return this.toItemsDTO(item);
+        }).collect(Collectors.toList());
     }
 
     public ItemsDTO findByGunIdAndPatternId(int patt_id, int gun_id){

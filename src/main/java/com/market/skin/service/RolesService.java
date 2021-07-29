@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.market.skin.exception.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
+import com.market.skin.exception.ConstraintViolation;
 import com.market.skin.exception.RecordNotFoundException;
 import com.market.skin.model.Roles;
 import com.market.skin.model.RolesName;
@@ -44,7 +46,7 @@ public class RolesService {
         try{
             repository.save(role);
         } catch (ConstraintViolationException ex){
-            throw new RecordNotFoundException("Role is already existed.");
+            throw new ConstraintViolation("Role is already existed.");
         }
     }
     

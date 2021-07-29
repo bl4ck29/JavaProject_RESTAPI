@@ -17,6 +17,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+// import io.swagger.annotations.ApiModel;
 import lombok.Setter;
 import lombok.Getter;
 
@@ -25,6 +26,7 @@ import lombok.Getter;
     indexes = @Index(columnList = "item_id", name = "item_ind"))
 @Setter
 @Getter
+// @ApiModel(value = "Items Model")
 public class Items {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int item_id;
@@ -48,6 +50,9 @@ public class Items {
 
     @Size(min = 10, max = 200) 
     private String item_image;
+
+    @NotNull
+    private float price;
     
     @ManyToOne()
     @JoinColumn(name="pattern_id", referencedColumnName = "pattern_id", insertable = false, updatable = false)
@@ -58,11 +63,12 @@ public class Items {
     private List<Transactions> likedTrans;
 
     public Items(){}
-    public Items(int gun_id, int patt_id, int cre_id, String image){
+    public Items(int gun_id, int patt_id, int cre_id, String image, float price){
         this.gunId = gun_id;
         this.patternId = patt_id;
         this.creatorId = cre_id;
         this.item_image = image;
+        this.price = price;
     }
 
     @Override

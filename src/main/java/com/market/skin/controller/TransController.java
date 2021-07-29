@@ -1,19 +1,16 @@
 package com.market.skin.controller;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
+import com.market.skin.controller.payload.request.ModifyTransactionRequest;
 import com.market.skin.controller.payload.response.MessageResponse;
 import com.market.skin.model.SuccessCode;
 import com.market.skin.model.Transactions;
 import com.market.skin.service.TransService;
-import com.nimbusds.oauth2.sdk.Message;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+// import io.swagger.annotations.Api;
+
 @RestController
 @RequestMapping("/transactions")
+// @Api(value ="Transactions APIs")
 public class TransController {
     @Autowired
     private final TransService service;
@@ -33,7 +33,7 @@ public class TransController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     ResponseEntity<MessageResponse> find(@RequestParam("attr") String attr, @RequestParam("value") String value){
         switch (attr) {
             case "id":
@@ -56,9 +56,9 @@ public class TransController {
     }
 
     @PostMapping("/modify")
-    ResponseEntity<MessageResponse> test(@RequestBody Transactions newTrans){
-        newTrans.setUpdate_time(LocalDateTime.now());
-        service.modify(newTrans);
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('CREATOR')")
+    ResponseEntity<MessageResponse> modify(@RequestBody ModifyTransactionRequest request){
+        service.modify(request);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());
     }
     

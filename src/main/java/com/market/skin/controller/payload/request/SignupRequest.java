@@ -32,5 +32,4 @@ public class SignupRequest {
     public void setEmail(String email){this.email = email;}
     public void setPassword(String password){this.password = password;}
     public void setProfile(String profile){this.profile = profile;}
-    public void setRole(Set<String> role){this.role = role;}
 }

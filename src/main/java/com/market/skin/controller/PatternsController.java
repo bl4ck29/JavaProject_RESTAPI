@@ -2,6 +2,7 @@ package com.market.skin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,9 +16,11 @@ import com.market.skin.controller.payload.response.MessageResponse;
 import com.market.skin.model.Patterns;
 import com.market.skin.model.SuccessCode;
 import com.market.skin.service.PatternsService;
+// import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/patterns")
+// @Api(value = "Patterns APIs")
 public class PatternsController {
     @Autowired
     private PatternsService service;
@@ -26,7 +29,7 @@ public class PatternsController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     ResponseEntity<MessageResponse> find(@RequestParam("attr") String attr, @RequestParam("value") String value){
         switch (attr) {
             case "id":
@@ -38,12 +41,15 @@ public class PatternsController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hadRole('CREATOR')")
     ResponseEntity<MessageResponse> createPattern(@RequestBody Patterns newPatt){
-        service.create(newPatt);
+        Patterns patt = newPatt;
+        service.create(patt);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_CREATE).build());
     }
     
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hadRole('CREATOR')")
     ResponseEntity<MessageResponse> deleteGun(@PathVariable int id){
         service.delete(id);
         return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_MODIFY).build());
@@ -51,7 +57,7 @@ public class PatternsController {
 
     @GetMapping("/page")
     public ResponseEntity<MessageResponse> page(@RequestParam("page") int page, @RequestParam("size") int size){
-        return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).build());
+        return ResponseEntity.ok(MessageResponse.builder().success(SuccessCode.SUCCESS_GET).data(service.showPage(page, size)).build());
     }
 
     @GetMapping("/sort")
